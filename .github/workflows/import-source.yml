@@ -1,5 +1,6 @@
 name: Import Daily Dynasty source
 on:
+  workflow_dispatch:
   push:
     paths:
       - '.payload-part-*'
@@ -10,14 +11,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Unpack verified source
+      - name: Unpack Daily Dynasty
         shell: bash
         run: |
           set -euo pipefail
           for i in {0..7}; do
-            [[ -f ".payload-part-$i" ]] || { echo "Waiting for all 8 parts"; exit 0; }
+            [[ -f ".payload-part-$i" ]] || { echo "Missing source part $i"; exit 1; }
           done
-          cat .payload-part-{0..7} | base64 --decode | tar -xJf -
+          cat .payload-part-{0..7} | base64 --decode > /tmp/daily-dynasty-source.tar.xz
+          echo "0ae202971068875220d276e86a7b75a04238c72226906dee5a149ceb3002d097  /tmp/daily-dynasty-source.tar.xz" | sha256sum -c -
+          tar -xJf /tmp/daily-dynasty-source.tar.xz
           rm .payload-part-{0..7} .github/workflows/import-source.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
