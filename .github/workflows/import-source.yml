@@ -1,0 +1,26 @@
+name: Import Daily Dynasty source
+on:
+  push:
+    paths:
+      - '.payload-part-*'
+permissions:
+  contents: write
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unpack verified source
+        shell: bash
+        run: |
+          set -euo pipefail
+          for i in {0..7}; do
+            [[ -f ".payload-part-$i" ]] || { echo "Waiting for all 8 parts"; exit 0; }
+          done
+          cat .payload-part-{0..7} | base64 --decode | tar -xJf -
+          rm .payload-part-{0..7} .github/workflows/import-source.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add --all
+          git commit -m "Import complete Daily Dynasty source"
+          git push
