@@ -21,9 +21,12 @@ jobs:
           cat .payload-part-{0..7} | base64 --decode > /tmp/daily-dynasty-source.tar.xz
           echo "0ae202971068875220d276e86a7b75a04238c72226906dee5a149ceb3002d097  /tmp/daily-dynasty-source.tar.xz" | sha256sum -c -
           tar -xJf /tmp/daily-dynasty-source.tar.xz
-          rm .payload-part-{0..7} .github/workflows/import-source.yml
+          # GitHub Actions tokens cannot add or delete workflow definitions.
+          # Leave this workflow in place and omit the imported test workflow.
+          rm -f .github/workflows/test.yml .payload-part-trigger
+          rm .payload-part-{0..7}
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add --all
-          git commit -m "Import complete Daily Dynasty source"
+          git commit -m "Import Daily Dynasty application source"
           git push
