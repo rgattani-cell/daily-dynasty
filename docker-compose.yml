@@ -1,0 +1,17 @@
+# Local / self-hosted durable deployment: docker compose up --build -d
+# This volume is required: never remove it unless you want to delete league data.
+services:
+  daily-dynasty:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "${DD_PORT:-8000}:8000"
+    environment:
+      DD_DATA_DIR: /app/data
+      DD_SECURE_COOKIES: ${DD_SECURE_COOKIES:-0}
+      DD_PUBLIC_ORIGIN: ${DD_PUBLIC_ORIGIN:-}
+      DD_INVITE_CODE: ${DD_INVITE_CODE:-}
+    volumes:
+      - daily_dynasty_data:/app/data
+volumes:
+  daily_dynasty_data:

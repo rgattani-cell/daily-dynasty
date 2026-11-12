@@ -1,0 +1,9 @@
+__pycache__/
+.pytest_cache/
+.test-runtime/
+_browser_check.py
+.venv/
+.env
+*.pyc
+data/
+.DS_Store
